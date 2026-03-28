@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ckb" dir="rtl">
+<html lang="ckb" id="htmlRoot" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <meta name="google-site-verification" content="TIhv0tt3FCEP4dnyjAzjaFoRtmCWvtB0UOwRyLWobH0" />
   <title>Peshawa Cinema - پاشا سینەما</title>
-  <meta name="description" content="پێگەیەک بۆ بینینی زانیاری دەربارەی نوێترین فیلم و زنجیرەکان">
+  <meta name="description" content="مالپەڕێک بۆ بینینی نوێترین فیلم و زنجیرەکان">
   <meta name="keywords" content="فیلم, زنجیرە, سینەما, Peshawa Cinema">
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -119,6 +119,10 @@
       display: none;
       box-shadow: 0 12px 28px rgba(0,0,0,0.5);
       backdrop-filter: blur(8px);
+    }
+    html[dir="ltr"] .user-dropdown {
+      left: auto;
+      right: 0;
     }
     .user-dropdown.show { display: block; }
     .dropdown-item {
@@ -291,6 +295,12 @@
       border-right: 5px solid #f8d64e;
       padding-right: 16px;
     }
+    html[dir="ltr"] .section-title {
+      border-right: none;
+      border-left: 5px solid #f8d64e;
+      padding-right: 0;
+      padding-left: 16px;
+    }
     .movies-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
@@ -349,6 +359,7 @@
       border-radius: 36px;
       overflow: hidden;
       border: 1px solid #f8d64e;
+      transition: max-width 0.3s ease;
     }
     .modal-hero {
       min-height: 300px;
@@ -392,6 +403,10 @@
       border-right: 4px solid #f8d64e;
       line-height: 1.7;
     }
+    html[dir="ltr"] .modal-desc {
+      border-right: none;
+      border-left: 4px solid #f8d64e;
+    }
     .season-title {
       font-size: 1.2rem;
       margin: 24px 0 14px;
@@ -405,20 +420,21 @@
       gap: 14px;
     }
     .ep-btn {
-      background: #1e1e2a;
-      border: 1px solid #3a3a45;
+      background: #2a2a35;
+      border: 1px solid #4a4a55;
       padding: 12px;
       border-radius: 18px;
       text-align: center;
       cursor: pointer;
       transition: 0.2s;
-      font-weight: 500;
+      font-weight: 600;
       display: flex;
       flex-direction: column;
       gap: 6px;
       align-items: center;
+      color: #ffffff;
     }
-    .ep-btn i { font-size: 1.3rem; color: #aaa; }
+    .ep-btn i { font-size: 1.3rem; color: #f8d64e; }
     .ep-btn:hover {
       background: #f8d64e;
       color: #000;
@@ -560,6 +576,49 @@
       border: 1px solid #4a4a55;
       color: white;
     }
+    .modern-list-item {
+      background: #1e1e2a;
+      padding: 14px 18px;
+      border-radius: 18px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      border: 1px solid #3a3a45;
+    }
+    .modern-list-item:hover {
+      background: #f8d64e;
+      color: #000;
+      transform: translateX(-5px);
+    }
+    html[dir="ltr"] .modern-list-item:hover { transform: translateX(5px); }
+    .modern-list-item i { font-size: 1.2rem; }
+
+    /* ستایلە نوێیەکانی دوگمەی هەڵبژاردنی زمان */
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #1e1e2a;
+      border: 1px solid #3a3a45;
+      padding: 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 12px;
+      font-size: 1.05rem;
+    }
+    .lang-btn:hover, .lang-btn.active {
+      background: #f8d64e;
+      color: #000;
+      border-color: #f8d64e;
+    }
+
     @media (max-width: 768px) {
       .hero-title { font-size: 2.2rem; }
       .hero-section { margin: 12px; padding: 24px; min-height: 360px; }
@@ -633,13 +692,16 @@
   <div class="modal-card" id="modalCardBody"></div>
 </div>
 
+<div id="actionModal" class="modal admin-modal">
+  <div class="modal-card" id="actionModalBody"></div>
+</div>
+
 <footer>
   <p>دروستکراوە لەلایەن <span id="ownerName">Twana Yassin</span> &copy; 2026</p>
   <p id="footerNote" style="font-size:0.8rem;">پێشکەوتووترین پلاتفۆرم بۆ بینینی فیلم و زنجیرە</p>
 </footer>
 
 <script>
-  // ========== سکیوریتی بەهێز + ئەکاونت ==========
   function secureHash(s) {
     let h = 0;
     for (let i = 0; i < s.length; i++) h = ((h << 5) - h) + s.charCodeAt(i), h |= 0;
@@ -666,7 +728,6 @@
 
   const SAMPLE_VIDEO = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
 
-  // ========== داتای سەرەتایی (هەموو بەش و وەرزەکان زیاد کران) ==========
   let seedContent = [
     {
       id: "got", title: "Game of Thrones", type: "series", category: "series", rating: "9.2", genre: "فەنتازیا / دراما",
@@ -760,6 +821,131 @@
       episodes: [
         { name: "فیلمی تەواو", watchUrl: "https://vidsrc.me/embed/movie?imdb=tt8178634" }
       ]
+    },
+    {
+      id: "witcher", title: "The Witcher", type: "series", category: "series", rating: "8.2", genre: "فەنتازیا / ئاکشن",
+      img: "https://image.tmdb.org/t/p/w500/7vjaCdMwS3X7y6zMZBQaZwMMTzP.jpg",
+      bg: "https://image.tmdb.org/t/p/original/cC1R1V2E2UQcZpYcQqVcXlQqYqN.jpg",
+      desc: "جیراڵت لە ڕیڤیا، ڕاوچییەکی دەمووی، لە جیهانێکی تاریکدا شەڕ دەکات.",
+      seasons: [
+        { name: "وەرزی ١", eps: 8, sNum: 1, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt5180504" },
+        { name: "وەرزی ٢", eps: 8, sNum: 2, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt5180504" },
+        { name: "وەرزی ٣", eps: 8, sNum: 3, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt5180504" }
+      ]
+    },
+    {
+      id: "stranger", title: "Stranger Things", type: "series", category: "series", rating: "8.7", genre: "خەیاڵی / ترسناک",
+      img: "https://image.tmdb.org/t/p/w500/49WJfeNqCm1Z4qLfXj7VjZQzLxX.jpg",
+      bg: "https://image.tmdb.org/t/p/original/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg",
+      desc: "کۆمەڵێک منداڵ لە شارۆچکەی هاکنز لە ڕووداوە سەروو سروشتیەکان دەکۆڵنەوە.",
+      seasons: [
+        { name: "وەرزی ١", eps: 8, sNum: 1, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt4574334" },
+        { name: "وەرزی ٢", eps: 9, sNum: 2, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt4574334" },
+        { name: "وەرزی ٣", eps: 8, sNum: 3, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt4574334" },
+        { name: "وەرزی ٤", eps: 9, sNum: 4, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt4574334" }
+      ]
+    },
+    {
+      id: "lastofus", title: "The Last of Us", type: "series", category: "series", rating: "8.9", genre: "دڕامای / خەیاڵی",
+      img: "https://image.tmdb.org/t/p/w500/uJVJkfF6YJv4Q6nVc2W5rQ5f0Xg.jpg",
+      bg: "https://image.tmdb.org/t/p/original/4JhYFdY2j8qyfLzXpG8xVlQqYqN.jpg",
+      desc: "لە جیهانێکی پاش کۆتایی جیهاندا، جۆل و ئێلی گەشتێک دەکەن.",
+      seasons: [
+        { name: "وەرزی ١", eps: 9, sNum: 1, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt3581920" }
+      ]
+    },
+    {
+      id: "moneyheist", title: "Money Heist (La Casa de Papel)", type: "series", category: "series", rating: "8.3", genre: "تاوان / ئاکشن",
+      img: "https://image.tmdb.org/t/p/w500/reEMJA1uzspC1kD9YFHK5jYfPjR.jpg",
+      bg: "https://image.tmdb.org/t/p/original/4JhYFdY2j8qyfLzXpG8xVlQqYqN.jpg",
+      desc: "کۆمەڵێک تاوانبار بە سەرکردایەتی پڕۆفیسۆر پلان بۆ ڕووخاندنی چاپخانەی پول دادەنێن.",
+      seasons: [
+        { name: "بەشی ١", eps: 13, sNum: 1, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt6468322" },
+        { name: "بەشی ٢", eps: 9, sNum: 2, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt6468322" },
+        { name: "بەشی ٣", eps: 8, sNum: 3, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt6468322" },
+        { name: "بەشی ٤", eps: 8, sNum: 4, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt6468322" },
+        { name: "بەشی ٥", eps: 10, sNum: 5, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt6468322" }
+      ]
+    },
+    {
+      id: "peaky", title: "Peaky Blinders", type: "series", category: "series", rating: "8.8", genre: "دراما / تاوان",
+      img: "https://image.tmdb.org/t/p/w500/7j2y3h5KcVlJQlYrMp8ZzZzZzZz.jpg",
+      bg: "https://image.tmdb.org/t/p/original/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg",
+      desc: "خێزانی شێڵبی لە شاری بێرمینگهام دەستبەسەر کۆمپانیاکانی گرتووە.",
+      seasons: [
+        { name: "وەرزی ١", eps: 6, sNum: 1, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt2442560" },
+        { name: "وەرزی ٢", eps: 6, sNum: 2, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt2442560" },
+        { name: "وەرزی ٣", eps: 6, sNum: 3, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt2442560" },
+        { name: "وەرزی ٤", eps: 6, sNum: 4, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt2442560" },
+        { name: "وەرزی ٥", eps: 6, sNum: 5, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt2442560" },
+        { name: "وەرزی ٦", eps: 6, sNum: 6, watchUrlBase: "https://vidsrc.me/embed/tv?imdb=tt2442560" }
+      ]
+    },
+    {
+      id: "avengers", title: "The Avengers", type: "movie", category: "hollywood", rating: "8.1", genre: "ئاکشن / خەیاڵی",
+      img: "https://image.tmdb.org/t/p/w500/cezWGskPY5x7GaglTTRN4Fugfb8.jpg",
+      bg: "https://image.tmdb.org/t/p/original/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg",
+      desc: "پاڵەوانەکان کۆدەبنەوە بۆ ڕووبەڕووبوونەوەی لۆکی.",
+      episodes: [
+        { name: "The Avengers (2012)", watchUrl: "https://vidsrc.me/embed/movie?imdb=tt0848228" },
+        { name: "Avengers: Age of Ultron", watchUrl: "https://vidsrc.me/embed/movie?imdb=tt2395427" },
+        { name: "Avengers: Infinity War", watchUrl: "https://vidsrc.me/embed/movie?imdb=tt4154756" },
+        { name: "Avengers: Endgame", watchUrl: "https://vidsrc.me/embed/movie?imdb=tt4154796" }
+      ]
+    },
+    {
+      id: "spiderman_nwh", title: "Spider-Man: No Way Home", type: "movie", category: "hollywood", rating: "8.3", genre: "ئاکشن / خەیاڵی",
+      img: "https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
+      bg: "https://image.tmdb.org/t/p/original/8c5z5m5h5VqYqYqYqYqYqYqYqY.jpg",
+      desc: "پیتەر پارکەر یارمەتی دکتۆر سترەنج دەپاڕێتەوە بۆ گۆڕینی مێژوو.",
+      episodes: [
+        { name: "Spider-Man: No Way Home", watchUrl: "https://vidsrc.me/embed/movie?imdb=tt10872600" }
+      ]
+    },
+    {
+      id: "darkknight", title: "The Dark Knight", type: "movie", category: "hollywood", rating: "9.0", genre: "ئاکشن / تاوان",
+      img: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+      bg: "https://image.tmdb.org/t/p/original/3b5XzQ7zQ8zQzQzQzQzQzQzQzQ.jpg",
+      desc: "باتمان دژی جۆکەر دەجەنگێت بۆ ڕزگارکردنی گۆتام.",
+      episodes: [
+        { name: "The Dark Knight", watchUrl: "https://vidsrc.me/embed/movie?imdb=tt0468569" }
+      ]
+    },
+    {
+      id: "inception", title: "Inception", type: "movie", category: "hollywood", rating: "8.8", genre: "خەیاڵی / ئاکشن",
+      img: "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
+      bg: "https://image.tmdb.org/t/p/original/8c5z5m5h5VqYqYqYqYqYqYqYqY.jpg",
+      desc: "دزێک کە دەتوانێت بچێتە ناو خەونی خەڵکەوە، ئەرکێکی قورسی پێدەسپێردرێت.",
+      episodes: [
+        { name: "Inception", watchUrl: "https://vidsrc.me/embed/movie?imdb=tt1375666" }
+      ]
+    },
+    {
+      id: "interstellar", title: "Interstellar", type: "movie", category: "hollywood", rating: "8.6", genre: "خەیاڵی / زانستی",
+      img: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+      bg: "https://image.tmdb.org/t/p/original/8c5z5m5h5VqYqYqYqYqYqYqYqY.jpg",
+      desc: "گروپێک گەڕان دەکەن بۆ دۆزینەوەی هەسارەیەکی نوێ بۆ مرۆڤایەتی.",
+      episodes: [
+        { name: "Interstellar", watchUrl: "https://vidsrc.me/embed/movie?imdb=tt0816692" }
+      ]
+    },
+    {
+      id: "lotr_fellowship", title: "The Lord of the Rings: The Fellowship of the Ring", type: "movie", category: "hollywood", rating: "8.8", genre: "فەنتازیا / سەرکێشی",
+      img: "https://image.tmdb.org/t/p/w500/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg",
+      bg: "https://image.tmdb.org/t/p/original/8c5z5m5h5VqYqYqYqYqYqYqYqY.jpg",
+      desc: "فرۆدۆ بەگینز بەرەو کێوی مۆردۆر گەشت دەکات بۆ لەناوبردنی ئەنگوستیلەکە.",
+      episodes: [
+        { name: "The Fellowship of the Ring", watchUrl: "https://vidsrc.me/embed/movie?imdb=tt0120737" }
+      ]
+    },
+    {
+      id: "harry_potter1", title: "Harry Potter and the Sorcerer's Stone", type: "movie", category: "hollywood", rating: "7.6", genre: "فەنتازیا / سەرکێشی",
+      img: "https://image.tmdb.org/t/p/w500/9WlN3Xz5QwYzYzYzYzYzYzYzYz.jpg",
+      bg: "https://image.tmdb.org/t/p/original/8c5z5m5h5VqYqYqYqYqYqYqYqY.jpg",
+      desc: "هاری پۆتەر دەچێتە قوتابخانەی هاگوارتز و سەرگەرمیەکانی دەست پێدەکات.",
+      episodes: [
+        { name: "Harry Potter and the Sorcerer's Stone", watchUrl: "https://vidsrc.me/embed/movie?imdb=tt0241527" }
+      ]
     }
   ];
 
@@ -774,7 +960,6 @@
     localStorage.setItem("customMovies", JSON.stringify(customMovies));
   }
 
-  // ========== سڕینەوە ==========
   function deleteAnyItem(itemId) {
     let seedIndex = seedContent.findIndex(i => i.id === itemId);
     if (seedIndex !== -1) seedContent.splice(seedIndex, 1);
@@ -789,7 +974,6 @@
     return true;
   }
 
-  // ========== دەستکاری (Edit) ==========
   function editItem(itemId) {
     let item = findItem(itemId);
     if (!item) return;
@@ -872,11 +1056,10 @@
 
     let modalDiv = document.createElement("div");
     modalDiv.className = "modal admin-modal";
-    modalDiv.style.display = "block"; // چارەسەری کێشەی سکڕۆڵ (گۆڕدرا لە flex بۆ block)
+    modalDiv.style.display = "block";
     modalDiv.innerHTML = `<div class="modal-card">${modalHtml}</div>`;
     document.body.appendChild(modalDiv);
 
-    // فانکشنەکانی زیادکردن/لابردنی وەرز/ئەڵقە (global)
     window.removeSeason = function(idx) {
       let container = document.getElementById("seasonsContainer");
       if(container) {
@@ -963,10 +1146,8 @@
         updatedItem.episodes = episodes;
       }
 
-      // نۆڤەکردنی ئایتم (لە seedContent یان customMovies)
       let seedIdx = seedContent.findIndex(i => i.id === item.id);
       if (seedIdx !== -1) {
-        // لە seed بیسڕەوە و زیاد بکە بۆ customMovies بۆ مانەوە
         seedContent.splice(seedIdx, 1);
         customMovies.unshift(updatedItem);
       } else {
@@ -981,7 +1162,6 @@
     };
   }
 
-  // ========== هیرۆ سلاید ==========
   function updateHeroSlides() {
     let allItems = getAll();
     let topRated = [...allItems].sort((a,b) => parseFloat(b.rating) - parseFloat(a.rating)).slice(0, 6);
@@ -989,19 +1169,16 @@
   }
   let heroSlides = updateHeroSlides();
 
-  // فرەزمان
   const i18n = {
-    ckb: { siteTitle:"سینەمای پێشەوا", account:"ئەکاونت", favorites:"دڵخوازەکانم", watchLater:"بعدتر ببینە", adminPanel:"پانێڵی بەڕێوبەر", settings:"ڕێکخستنەکان", language:"زمان", login:"چوونەژوورەوە", register:"دروستکردنی ئەکاونت", logout:"دەرچوون", dropdownNote:"ئەکاونت و ڕێکخستنەکانت لێرە بەڕێوە ببە.", watch:"سەیرکردن", info:"زانیاری", all:"هەمووی", movies:"فیلمەکان", series:"زنجیرەکان", sectionTitle:"نوێترین و پڕبینەرترین", heroLabel:"پێشکەشکراوە لەلایەن Twana Yassin", playerPlaceholder:"سەرچاوەی ڤیدیۆ نەدۆزرایەوە.", playerBack:"گەڕانەوە", playEpisode:"ئەڵقە", seasons:"وەرزەکان", episodes:"ئەڵقەکان", openAdmin:"زیادکردن", added:"زیادکرا", removed:"لابردرا", favoriteAdded:"زیادکرا", favoriteRemoved:"لابردرا", laterAdded:"زیادکرا", laterRemoved:"لابردرا" },
+    ckb: { siteTitle:"سینەمای پێشەوا", account:"ئەکاونت", favorites:"دڵخوازەکانم", watchLater:"دواتر ببینە", adminPanel:"پانێڵی بەڕێوبەر", settings:"ڕێکخستنەکان", language:"زمان", login:"چوونەژوورەوە", register:"دروستکردنی ئەکاونت", logout:"دەرچوون", dropdownNote:"ئەکاونت و ڕێکخستنەکانت لێرە بەڕێوە ببە.", watch:"سەیرکردن", info:"زانیاری", all:"هەمووی", movies:"فیلمەکان", series:"زنجیرەکان", sectionTitle:"نوێترین و پڕبینەرترین", heroLabel:"پێشکەشکراوە لەلایەن Twana Yassin", playerPlaceholder:"سەرچاوەی ڤیدیۆ نەدۆزرایەوە.", playerBack:"گەڕانەوە", playEpisode:"ئەڵقە", seasons:"وەرزەکان", episodes:"ئەڵقەکان", openAdmin:"زیادکردن", added:"زیادکرا", removed:"لابردرا", favoriteAdded:"زیادکرا", favoriteRemoved:"لابردرا", laterAdded:"زیادکرا", laterRemoved:"لابردرا" },
     en: { siteTitle:"Peshawa Cinema", account:"Account", favorites:"Favorites", watchLater:"Watch Later", adminPanel:"Admin Panel", settings:"Settings", language:"Language", login:"Login", register:"Register", logout:"Logout", dropdownNote:"Manage account.", watch:"Watch", info:"Info", all:"All", movies:"Movies", series:"Series", sectionTitle:"Newest", heroLabel:"Presented by Twana Yassin", playerPlaceholder:"No video.", playerBack:"Back", playEpisode:"Ep", seasons:"Seasons", episodes:"Eps", openAdmin:"Add", added:"Added", removed:"Removed", favoriteAdded:"Added", favoriteRemoved:"Removed", laterAdded:"Added", laterRemoved:"Removed" },
     ar: { siteTitle:"سينما پێشەوا", account:"الحساب", favorites:"المفضلة", watchLater:"المشاهدة لاحقًا", adminPanel:"لوحة المدير", settings:"الإعدادات", language:"اللغة", login:"تسجيل الدخول", register:"إنشاء حساب", logout:"تسجيل الخروج", dropdownNote:"إدارة الحساب.", watch:"مشاهدة", info:"معلومات", all:"الكل", movies:"الأفلام", series:"المسلسلات", sectionTitle:"الأحدث", heroLabel:"تقديم Twana Yassin", playerPlaceholder:"لا يوجد فيديو.", playerBack:"رجوع", playEpisode:"حلقة", seasons:"مواسم", episodes:"حلقات", openAdmin:"إضافة", added:"تمت", removed:"أزيلت", favoriteAdded:"أضيفت", favoriteRemoved:"أزيلت", laterAdded:"أضيفت", laterRemoved:"أزيلت" }
   };
   function t(k) { return (i18n[lang]?.[k]) || i18n.ckb[k] || k; }
 
-  // ========== فانکشنەکانی پلەیەر و کارت (چالاککردنی سێرڤەرەکان) ==========
   function embedVideo(url) {
     if (!url) return `<div class="player-box"><i class="fa-solid fa-video-slash" style="font-size:2rem;"></i><div>${t("playerPlaceholder")}</div></div>`;
     if (url.includes("youtube")) { let vid = url.split("v=")[1]?.split("&")[0]; return `<iframe src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen></iframe>`; }
-    // چالاککردنی سێرڤەری زیرەک بە iframe
     if (url.includes("vidsrc") || url.includes("embed")) { return `<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`; }
     return `<video controls autoplay><source src="${url}" type="video/mp4">${t("playerPlaceholder")}</video>`;
   }
@@ -1009,7 +1186,6 @@
     let item = findItem(id);
     if (!item) return;
     
-    // دروستکردنی لینکی تەواوەتی ئەگەر سێرڤەرەکە بۆ زنجیرە بوو
     let finalUrl = url;
     if (finalUrl && finalUrl.includes("vidsrc.me/embed/tv") && sn && ep) {
         finalUrl = finalUrl + "&season=" + sn + "&episode=" + ep;
@@ -1110,7 +1286,6 @@
   function startHeroAuto() { if (heroTimer) clearInterval(heroTimer); heroTimer = setInterval(() => { if(heroSlides.length>1) { heroIndex = (heroIndex + 1) % heroSlides.length; fadeHeroTo(heroIndex); } }, 6000); }
   function updateHeroSlidesAndRestart() { heroSlides = updateHeroSlides(); heroIndex = 0; if(heroSlides.length) loadHero(0); startHeroAuto(); }
 
-  // ========== هەژمار و بەڕێوەبردن ==========
   function updateAccountUI() {
     let isLogged = !!currentUser;
     let name = isLogged ? currentUser.name : (lang === "ar" ? "ضيف" : lang === "en" ? "Guest" : "میوان");
@@ -1155,71 +1330,87 @@
     alert("بەخێربێیت " + currentUser.name);
   }
   function logoutAccount() { currentUser = null; saveState(); updateAccountUI(); alert(t("logout")); }
+
   function openAdminPanel() {
     if (!currentUser || currentUser.name !== MASTER_NAME) return;
-    let action = prompt("🔐 پانێڵی بەڕێوبەر:\n1️⃣ زیادکردنی فیلم/زنجیرە\n2️⃣ سڕینەوەی ناوەڕۆک\n3️⃣ دەستکاری فیلم/زنجیرە", "1");
-    if (action === "1") {
-      let title = prompt("ناونیشان");
-      if (!title) return;
-      let type = prompt("جۆر (movie/series)", "movie");
-      let rating = prompt("ڕەیتینگ (0-10)", "8.0");
-      let genre = prompt("چەشن", "Action/Drama");
-      let img = prompt("پۆستەر (URL)", "https://via.placeholder.com/200x300");
-      let bg = prompt("باکگراوند (URL)", img);
-      let desc = prompt("باس", "باسی فیلم...");
-      let id = "custom_" + Date.now().toString(36);
-      let newItem = { id, title, type, rating, genre, img, bg, desc };
-      if (type === "series") newItem.seasons = [{ name: "وەرزی ١", eps: 1, sNum: 1, watchUrlBase: SAMPLE_VIDEO }];
-      else newItem.episodes = [{ name: "فیلم", watchUrl: SAMPLE_VIDEO }];
-      customMovies.unshift(newItem);
-      saveState();
-      renderGrid();
-      updateHeroSlidesAndRestart();
-      alert("✅ زیادکرا");
-    } else if (action === "2") {
-      let allItems = getAll();
-      if (allItems.length === 0) { alert("هیچ فیلمێک نییە"); return; }
-      let listHtml = `<div class="close-modal" id="closeDeleteModal"><i class="fa-solid fa-xmark"></i></div><div class="modal-hero" style="background:#111216;"><div class="modal-hero-content"><span class="badge">🗑️ سڕینەوە</span><h1 style="font-size:1.6rem;">هەڵبژێرە بۆ سڕینەوە</h1></div></div><div class="modal-body"><div class="admin-list">` +
-        allItems.map(item => `<div class="admin-item"><span><strong>${item.title}</strong> (${item.type === 'series' ? 'زنجیرە' : 'فیلم'})</span><button class="delete-item" data-id="${item.id}"><i class="fa-solid fa-trash"></i> سڕینەوە</button></div>`).join('') + `</div></div>`;
-      let modalDiv = document.createElement("div");
-      modalDiv.className = "modal admin-modal";
-      modalDiv.style.display = "block"; // چارەسەری کێشەی سکڕۆڵ
-      modalDiv.innerHTML = `<div class="modal-card">${listHtml}</div>`;
-      document.body.appendChild(modalDiv);
-      modalDiv.querySelector("#closeDeleteModal").onclick = () => modalDiv.remove();
-      modalDiv.querySelectorAll(".delete-item").forEach(btn => {
-        btn.onclick = () => {
-          let id = btn.dataset.id;
-          if (confirm("دڵنیای لە سڕینەوەی ئەم ناوەڕۆکە؟")) {
-            if (deleteAnyItem(id)) {
-              renderGrid();
-              updateHeroSlidesAndRestart();
-              modalDiv.remove();
-              alert("سڕایەوە ✅");
-            } else alert("هەڵە");
-          }
-        };
-      });
-    } else if (action === "3") {
-      let allItems = getAll();
-      if (allItems.length === 0) { alert("هیچ فیلمێک نییە"); return; }
-      let listHtml = `<div class="close-modal" id="closeEditSelectModal"><i class="fa-solid fa-xmark"></i></div><div class="modal-hero" style="background:#111216;"><div class="modal-hero-content"><span class="badge">✏️ دەستکاری</span><h1 style="font-size:1.6rem;">هەڵبژێرە بۆ دەستکاری</h1></div></div><div class="modal-body"><div class="admin-list">` +
-        allItems.map(item => `<div class="admin-item"><span><strong>${item.title}</strong> (${item.type === 'series' ? 'زنجیرە' : 'فیلم'})</span><button class="edit-item" data-id="${item.id}"><i class="fa-solid fa-pen-to-square"></i> دەستکاری</button></div>`).join('') + `</div></div>`;
-      let modalDiv = document.createElement("div");
-      modalDiv.className = "modal admin-modal";
-      modalDiv.style.display = "block"; // چارەسەری کێشەی سکڕۆڵ
-      modalDiv.innerHTML = `<div class="modal-card">${listHtml}</div>`;
-      document.body.appendChild(modalDiv);
-      modalDiv.querySelector("#closeEditSelectModal").onclick = () => modalDiv.remove();
-      modalDiv.querySelectorAll(".edit-item").forEach(btn => {
-        btn.onclick = () => {
-          let id = btn.dataset.id;
-          modalDiv.remove();
-          editItem(id);
-        };
-      });
-    } else alert("ژمارەی نادروست");
+    const modalContent = `
+      <div class="modern-list-item" onclick="adminAddContent()">
+        <i class="fa-solid fa-plus-circle"></i> زیادکردنی فیلم/زنجیرە
+      </div>
+      <div class="modern-list-item" onclick="adminDeleteContent()">
+        <i class="fa-solid fa-trash-alt"></i> سڕینەوەی ناوەڕۆک
+      </div>
+      <div class="modern-list-item" onclick="adminEditContent()">
+        <i class="fa-solid fa-pen-to-square"></i> دەستکاری فیلم/زنجیرە
+      </div>
+      <div class="modern-list-item" onclick="closeActionModal()">
+        <i class="fa-solid fa-times-circle"></i> داخستن
+      </div>
+    `;
+    showModalUI("🔐 پانێڵی بەڕێوبەر", modalContent);
   }
+
+  window.adminAddContent = function() {
+    closeActionModal();
+    let title = prompt("ناونیشان");
+    if (!title) return;
+    let type = prompt("جۆر (movie/series)", "movie");
+    let rating = prompt("ڕەیتینگ (0-10)", "8.0");
+    let genre = prompt("چەشن", "Action/Drama");
+    let img = prompt("پۆستەر (URL)", "https://via.placeholder.com/200x300");
+    let bg = prompt("باکگراوند (URL)", img);
+    let desc = prompt("باس", "باسی فیلم...");
+    let id = "custom_" + Date.now().toString(36);
+    let newItem = { id, title, type, rating, genre, img, bg, desc };
+    if (type === "series") newItem.seasons = [{ name: "وەرزی ١", eps: 1, sNum: 1, watchUrlBase: SAMPLE_VIDEO }];
+    else newItem.episodes = [{ name: "فیلم", watchUrl: SAMPLE_VIDEO }];
+    customMovies.unshift(newItem);
+    saveState();
+    renderGrid();
+    updateHeroSlidesAndRestart();
+    alert("✅ زیادکرا");
+  };
+
+  window.adminDeleteContent = function() {
+    closeActionModal();
+    let allItems = getAll();
+    if (allItems.length === 0) { alert("هیچ فیلمێک نییە"); return; }
+    let listHtml = `<div class="admin-list">` +
+      allItems.map(item => `<div class="admin-item"><span><strong>${item.title}</strong> (${item.type === 'series' ? 'زنجیرە' : 'فیلم'})</span><button class="delete-item" data-id="${item.id}"><i class="fa-solid fa-trash"></i> سڕینەوە</button></div>`).join('') + `</div>`;
+    showModalUI("🗑️ سڕینەوە", listHtml);
+    
+    document.querySelectorAll(".delete-item").forEach(btn => {
+      btn.onclick = () => {
+        let id = btn.dataset.id;
+        if (confirm("دڵنیای لە سڕینەوەی ئەم ناوەڕۆکە؟")) {
+          if (deleteAnyItem(id)) {
+            renderGrid();
+            updateHeroSlidesAndRestart();
+            closeActionModal();
+            alert("سڕایەوە ✅");
+          } else alert("هەڵە");
+        }
+      };
+    });
+  };
+
+  window.adminEditContent = function() {
+    closeActionModal();
+    let allItems = getAll();
+    if (allItems.length === 0) { alert("هیچ فیلمێک نییە"); return; }
+    let listHtml = `<div class="admin-list">` +
+      allItems.map(item => `<div class="admin-item"><span><strong>${item.title}</strong> (${item.type === 'series' ? 'زنجیرە' : 'فیلم'})</span><button class="edit-item" data-id="${item.id}"><i class="fa-solid fa-pen-to-square"></i> دەستکاری</button></div>`).join('') + `</div>`;
+    showModalUI("✏️ هەڵبژێرە بۆ دەستکاری", listHtml);
+
+    document.querySelectorAll(".edit-item").forEach(btn => {
+      btn.onclick = () => {
+        let id = btn.dataset.id;
+        closeActionModal();
+        editItem(id);
+      };
+    });
+  };
+
   function applyLanguage() {
     document.querySelectorAll("[data-i18n]").forEach(el => { let k = el.getAttribute("data-i18n"); if (el.tagName === "INPUT") el.placeholder = t(k); else el.textContent = t(k); });
     document.querySelector(".site-badge").textContent = t("siteTitle");
@@ -1227,17 +1418,85 @@
     loadHero(heroIndex);
     renderGrid();
     updateAccountUI();
+
+    const htmlRoot = document.getElementById("htmlRoot");
+    if (lang === "en") {
+      htmlRoot.setAttribute("dir", "ltr");
+    } else {
+      htmlRoot.setAttribute("dir", "rtl");
+    }
   }
-  function openSettingsPanel() { alert(`${t("settings")}:\n🌐 ${t("language")}: ${lang}\n👤 ${t("account")}: ${currentUser ? currentUser.name : t("logout")}`); }
-  function openLanguagePanel() { let c = prompt(`${t("language")} (ckb/en/ar)`, lang); if (c && ["ckb","en","ar"].includes(c.toLowerCase())) { lang = c.toLowerCase(); saveState(); applyLanguage(); } }
+
+  // دیزاینی نوێی بەشی سیتینگەکان کە قەبارەی بچووک کراوەتەوە
+  function openSettingsPanel() {
+    const userName = currentUser ? currentUser.name : (lang === 'en' ? 'Guest' : (lang === 'ar' ? 'ضيف' : 'میوان'));
+    const langName = lang === 'ckb' ? 'کوردی' : (lang === 'en' ? 'English' : 'العربية');
+    const chevronIcon = (lang === 'en') ? 'fa-chevron-right' : 'fa-chevron-left';
+
+    const modalContent = `
+      <div class="close-modal" onclick="closeActionModal()"><i class="fa-solid fa-xmark"></i></div>
+      <div class="modal-hero" style="min-height:100px; background:#111216; padding: 25px 20px;">
+        <div class="modal-hero-content" style="text-align:center; width: 100%;">
+          <h2 style="color:#f8d64e; margin-bottom:0;"><i class="fa-solid fa-gear"></i> ${t("settings")}</h2>
+        </div>
+      </div>
+      <div class="modal-body" style="padding: 20px;">
+        <div class="modern-list-item" onclick="openLanguagePanel();" style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; gap:15px; align-items:center;">
+            <i class="fa-solid fa-language" style="color:#f8d64e; font-size:1.5rem;"></i>
+            <div>
+              <div style="font-size:0.8rem; color:#aaa;">${t("language")}</div>
+              <div style="font-weight:bold; font-size:1.1rem;">${langName}</div>
+            </div>
+          </div>
+          <i class="fa-solid ${chevronIcon}" style="color:#666;"></i>
+        </div>
+        <div class="modern-list-item" style="display:flex; gap:15px; align-items:center; cursor:default;">
+          <i class="fa-solid fa-user" style="color:#f8d64e; font-size:1.5rem;"></i>
+          <div>
+            <div style="font-size:0.8rem; color:#aaa;">${t("account")}</div>
+            <div style="font-weight:bold; font-size:1.1rem;">${userName}</div>
+          </div>
+        </div>
+      </div>
+    `;
+    showSettingsModal(modalContent);
+  }
+
+  // دیزاینی نوێی هەڵبژاردنی زمان کە لە جیاتی prompt بەکاردێت
+  function openLanguagePanel() {
+    const backIcon = (lang === 'en') ? 'fa-arrow-left' : 'fa-arrow-right';
+    
+    const modalContent = `
+      <div class="close-modal" onclick="openSettingsPanel()"><i class="fa-solid ${backIcon}"></i></div>
+      <div class="modal-hero" style="min-height:100px; background:#111216; padding: 25px 20px;">
+        <div class="modal-hero-content" style="text-align:center; width: 100%;">
+          <h2 style="color:#f8d64e; margin-bottom:0;"><i class="fa-solid fa-language"></i> زمان / Language</h2>
+        </div>
+      </div>
+      <div class="modal-body" style="padding: 20px;">
+        <div class="lang-btn ${lang === 'ckb' ? 'active' : ''}" onclick="setLanguage('ckb')">کوردی</div>
+        <div class="lang-btn ${lang === 'en' ? 'active' : ''}" onclick="setLanguage('en')">English</div>
+        <div class="lang-btn ${lang === 'ar' ? 'active' : ''}" onclick="setLanguage('ar')">العربية</div>
+      </div>
+    `;
+    showSettingsModal(modalContent);
+  }
+
+  window.setLanguage = function(newLang) {
+    lang = newLang;
+    saveState();
+    applyLanguage();
+    openSettingsPanel(); // دوای گۆڕینی زمان، دەگەڕێتەوە بۆ پەنجەرەی سیتینگەکان
+  };
+
   function showFavorites() { let f = favorites.map(id => findItem(id)?.title).filter(Boolean).join("\n") || "هیچ نییە"; alert(f); }
   function showWatchLater() { let w = watchLater.map(id => findItem(id)?.title).filter(Boolean).join("\n") || "هیچ نییە"; alert(w); }
 
-  // ========== پڕکردنەوەی مێنووی یوزەر ==========
   document.getElementById("userDropdown").innerHTML = `
-    <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px; border-bottom:1px solid #3a3a45; padding-bottom:12px;">
+    <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px; padding:14px; background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08);">
       <div id="avatarBadge" style="width:42px; height:42px; background:#f8d64e; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#000;"><i class="fa-solid fa-user"></i></div>
-      <div><h4 id="accountName" style="margin:0;">میوان</h4><span id="accountRole" style="font-size:0.7rem;">ئەکاونتی ئاسایی</span></div>
+      <div><h4 id="accountName" style="margin:0; color:#fff;">میوان</h4><span id="accountRole" style="font-size:0.75rem; color:#bbb;">ئەکاونتی ئاسایی</span></div>
     </div>
     <div class="dropdown-item" id="dropdownAccountLabel"><i class="fa-solid fa-circle-user"></i> <span data-i18n="account">ئەکاونت</span></div>
     <div class="dropdown-item" id="dropdownFavorites"><i class="fa-solid fa-bookmark"></i> <span data-i18n="favorites">دڵخوازەکانم</span></div>
@@ -1252,7 +1511,6 @@
     <div class="dropdown-item" id="logoutBtn" style="color:#ff8a8a;"><i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout">دەرچوون</span></div>
     <div class="mini-note" data-i18n="dropdownNote">ئەکاونت و ڕێکخستنەکانت لێرە بەڕێوە ببە.</div>`;
 
-  // ========== بەستنەوەی ڕووداوەکان ==========
   document.querySelectorAll(".menu-item").forEach(btn => { btn.onclick = () => { document.querySelectorAll(".menu-item").forEach(b => b.classList.remove("active")); btn.classList.add("active"); currentFilter = btn.dataset.menu; renderGrid(); }; });
   document.querySelectorAll(".nav-item").forEach(nav => { nav.onclick = () => { document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active")); nav.classList.add("active"); currentNav = nav.dataset.nav; renderGrid(); }; });
   document.getElementById("searchInput").addEventListener("input", () => renderGrid());
@@ -1287,6 +1545,40 @@
   renderGrid();
   updateAccountUI();
   document.getElementById("ownerName").textContent = "Twana Yassin";
+
+  // فەنکشن بۆ پیشاندانی پەنجەرەی گەورە (پانێڵی ئەدمین)
+  window.showModalUI = function(title, contentHtml, showClose = true) {
+    const modal = document.getElementById("actionModal");
+    const body = document.getElementById("actionModalBody");
+    body.parentElement.style.maxWidth = "780px"; // بۆ ئەدمین پانێڵ با گەورە بێت
+    body.innerHTML = `
+      ${showClose ? '<div class="close-modal" onclick="closeActionModal()"><i class="fa-solid fa-xmark"></i></div>' : ''}
+      <div class="modal-hero" style="min-height:120px; background:#1e1e2a; display:flex; align-items:center; justify-content:center;">
+        <h2 style="color:#f8d64e;">${title}</h2>
+      </div>
+      <div class="modal-body">${contentHtml}</div>
+    `;
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden";
+  };
+
+  // فەنکشنی نوێ تەنها بۆ پەنجەرەی ڕێکخستنەکان و زمان (بچووکتر کراوەتەوە)
+  window.showSettingsModal = function(contentHtml) {
+    const modal = document.getElementById("actionModal");
+    const body = document.getElementById("actionModalBody");
+    body.parentElement.style.maxWidth = "400px"; // بچووککردنەوە بۆ دیزاینێکی مۆدێرنتر
+    body.innerHTML = contentHtml;
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden";
+  };
+
+  window.closeActionModal = function() {
+    const modal = document.getElementById("actionModal");
+    const body = document.getElementById("actionModalBody");
+    body.parentElement.style.maxWidth = ""; // گەڕانەوە بۆ قەبارەی ستاندارد
+    modal.style.display = "none";
+    document.body.style.overflow = "auto";
+  };
 </script>
 </body>
 </html>
